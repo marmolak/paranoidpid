@@ -6,6 +6,9 @@ use warnings;
 use Fcntl;
 use Fcntl ':mode';
 
+my $pid_file_loc = "/tmp/pid";
+my $pid_lock = 0;
+
 sub main {
 	#sleep (100);
 	return 1;
@@ -93,8 +96,6 @@ sub create_pid_file {
     return $ret;
 }
 
-my $pid_file_loc = "/tmp/pid";
-my $pid_lock = 0;
 
 my $ret = 0;
 eval
