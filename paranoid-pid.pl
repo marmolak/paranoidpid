@@ -6,7 +6,7 @@ use warnings;
 use Fcntl;
 
 sub main {
-	sleep (100);
+	#sleep (100);
 	return 1;
 }
 
@@ -44,18 +44,18 @@ sub create_pid_file_impl {
     }
 
     # check if its empty
-    open FP, '<', $pid_file or return 0;
-    my $pid = <FP>;
+    open my $fh, '<', $pid_file or return 0;
+    my $pid = <$fh>;
     # file is empty
     if (not defined $pid) {
-        close PID_FILE_HANDLE;
+        close $fh;
 	unlink $pid_file;
         return 0;
     }
     # file is not empty
     chomp $pid;
 
-    my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size, $atime, $mtime, $ctime, $blksize, $blocks) = stat FP
+    my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size, $atime, $mtime, $ctime, $blksize, $blocks) = stat $fh
          or return 0;
 
     my $now = time ();
@@ -64,6 +64,7 @@ sub create_pid_file_impl {
       my $process_runing = proc_is_running ($pid);
       return 2 if $process_runing;
       # process not running, then delete pidfile and dont grap lock;
+      ftruncate $fh, 0;
       unlink $pid_file;
       return 0;
     }
