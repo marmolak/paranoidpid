@@ -35,7 +35,7 @@ sub create_pid_file_impl {
     my ($pid_file) = @_;
 
     print "PID: Openning pid file ($pid_file)\n";
-    my $pid_file_handle = sysopen PID_FILE_HANDLE, $pid_file, O_EXCL | O_WRONLY | O_CREAT | O_TRUNC;
+    my $pid_file_handle = sysopen PID_FILE_HANDLE, $pid_file, O_EXCL | O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW;
     
     if ( $pid_file_handle ) {
         print PID_FILE_HANDLE $$;
