@@ -6,11 +6,11 @@ use warnings;
 use Fcntl;
 use Fcntl ':mode';
 
-my $pid_file_loc = "/tmp/pid";
+my $pid_file_loc = "/tmp/pid2";
 my $pid_lock = 0;
 
 sub main {
-	#sleep (100);
+	sleep (100);
 	return 1;
 }
 
@@ -39,8 +39,8 @@ sub create_pid_file_impl {
     my ($pid_file) = @_;
 
     print "PID: Openning pid file ($pid_file)\n";
-    my $pid_file_handle = sysopen PID_FILE_HANDLE, $pid_file, O_EXCL | O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW;
-    if ( $pid_file_handle ) {
+    my $pid_ok = sysopen PID_FILE_HANDLE, $pid_file, O_EXCL | O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW;
+    if ( $pid_ok ) {
         print PID_FILE_HANDLE $$;
         close PID_FILE_HANDLE;
         return 1;
@@ -71,10 +71,14 @@ sub create_pid_file_impl {
     my $now = time ();
     my $diff = $now - $ctime;
     if ( $diff >= 10 ) {
-      my $process_runing = proc_is_running ($pid);
-      return 2 if $process_runing;
+	my $process_runing = proc_is_running ($pid);
+	if ( $process_runing ) {
+		close $fh;
+		return 2;
+	}
       # process not running, then delete pidfile and dont grap lock;
-      ftruncate $fh, 0;
+      truncate $fh, 0;
+      close $fh;
       unlink $pid_file;
       return 0;
     }
