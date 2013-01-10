@@ -97,6 +97,19 @@ sub create_pid_file {
 }
 
 
+sub fallback {
+	eval {
+		local $@;
+		return 1;
+	} or do {
+		my $err = $@;
+		if ($err) {
+		    print "died with exception: $err\n";
+		}
+		
+	};
+}
+
 my $ret = 0;
 eval
 {
@@ -131,20 +144,9 @@ eval
 
 	if ($err) {
 	    print "died with exception: $err\n";
-	    goto FALLBACK;
+	    fallback ();
+	    $ret = 1;
 	}
-
-FALLBACK:
-	eval {
-		local $@;
-		return 1;
-	} or do {
-		my $err = $@;
-		if ($err) {
-		    print "died with exception: $err\n";
-		}
-		
-	};
 };
 
 if ($pid_lock)
