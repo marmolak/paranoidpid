@@ -38,7 +38,6 @@ sub create_pid_file_impl {
     print "PID: Openning pid file ($pid_file)\n";
     my $pid_file_handle = sysopen PID_FILE_HANDLE, $pid_file, O_EXCL | O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW;
     if ( $pid_file_handle ) {
-        # is regular file?
         print PID_FILE_HANDLE $$;
         close PID_FILE_HANDLE;
         return 1;
@@ -50,6 +49,7 @@ sub create_pid_file_impl {
     my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size, $atime, $mtime, $ctime, $blksize, $blocks) = stat $fh
         or return 0;
 
+    # is regular file?
     if ( !S_ISREG ($mode) ) {
         print "PID: $pid_file is not regular file!\n";
         return 2;
